@@ -38,7 +38,7 @@ func (h *UCPHandler) HandleUCPRedirect(w http.ResponseWriter, r *http.Request) {
 	if bucketName == "" {
 		bucketName = "ucp-feeds"
 	}
-	
+
 	objectName := fmt.Sprintf("tenant_%s_ucp_catalog.json", tenantID)
 
 	var gcsURL string

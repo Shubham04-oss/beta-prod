@@ -17,7 +17,7 @@ func main() {
 	defer dbpool.Close()
 
 	svc := unified.NewService(dbpool, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YTMwNDMyZDI1MDc0YmExZmE5NDBjYTkiLCJ3b3Jrc3BhY2VfaWQiOiI2YTMwNDMyZDI1MDc0YmExZmE5NDBjYWUiLCJpYXQiOjE3ODE1NDc4MjEsImtleV9pZCI6IjZhMzA0MzJlMjUwNzRiYTFmYTk0MGNiMyIsIm5vbmNlIjoidG40ajZiNjZoTW9OY3JlUlFkY3FQTktyMUNOaXZyN3MifQ.ixFL9DbwHTQazOnccjhn6ut1pD3voR3X8JQ95EDua3I")
-	
+
 	err = svc.ProcessPush(
 		context.Background(),
 		"bd103a09-90d6-4a3a-8749-cc41bdd592a7", // tenantID
@@ -25,7 +25,7 @@ func main() {
 		"661bc97c-5b3d-4b64-8597-afc9426dc582", // productID
 		"UPSERT",
 	)
-	
+
 	if err != nil {
 		log.Fatalf("Push failed: %v", err)
 	}

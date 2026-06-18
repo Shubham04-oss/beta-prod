@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
-	"encoding/json"
 
 	"github.com/joho/godotenv"
 	unified "github.com/unified-to/unified-go-sdk"
@@ -16,7 +16,7 @@ func main() {
 	if err := godotenv.Load("../../.env"); err != nil {
 		log.Println("No .env found, using env vars")
 	}
-    if err := godotenv.Load(".env"); err != nil {
+	if err := godotenv.Load(".env"); err != nil {
 		log.Println("No .env found, using env vars")
 	}
 
@@ -30,26 +30,26 @@ func main() {
 	)
 
 	ctx := context.Background()
-	
-    // Try to list orders from Commerce API across all connections? 
-    // Unified requires ConnectionID to list orders.
-    // Let's get connections from Unified API
-    res, err := sdk.Unified.ListUnifiedConnections(ctx, operations.ListUnifiedConnectionsRequest{})
-    if err != nil {
-        log.Fatalf("Error getting connections: %v", err)
-    }
 
-    if len(res.Connections) == 0 {
-        log.Println("No connections found.")
-        return
-    }
+	// Try to list orders from Commerce API across all connections?
+	// Unified requires ConnectionID to list orders.
+	// Let's get connections from Unified API
+	res, err := sdk.Unified.ListUnifiedConnections(ctx, operations.ListUnifiedConnectionsRequest{})
+	if err != nil {
+		log.Fatalf("Error getting connections: %v", err)
+	}
+
+	if len(res.Connections) == 0 {
+		log.Println("No connections found.")
+		return
+	}
 
 	for _, conn := range res.Connections {
 		fmt.Printf("Connection: %v (%v)\n", *conn.ID, conn.Environment)
 
-        if conn.Environment != nil && *conn.Environment != "Sandbox" {
-            continue
-        }
+		if conn.Environment != nil && *conn.Environment != "Sandbox" {
+			continue
+		}
 
 		// Fetch orders
 		ordersRes, err := sdk.Commerce.ListCommerceOrders(ctx, operations.ListCommerceOrdersRequest{

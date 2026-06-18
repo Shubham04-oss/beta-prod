@@ -10,8 +10,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/synq/pkg/db"
 	"github.com/synq/ops-api/internal/telemetry"
+	"github.com/synq/pkg/db"
 )
 
 type Activities struct {
@@ -50,7 +50,7 @@ func (a *Activities) ExtractCatalogActivity(ctx context.Context, tenantIDStr str
 
 	for _, row := range rows {
 		prodID := uuidFromPgType(row.ProductID)
-		
+
 		prod, exists := productMap[prodID]
 		if !exists {
 			prod = &UCPProduct{
@@ -130,7 +130,7 @@ func (a *Activities) UploadFeedToGCSActivity(ctx context.Context, feed UCPFeed, 
 	}
 
 	bucket := a.storage.Bucket(bucketName)
-	
+
 	// Create bucket if it doesn't exist (helpful for local emulator)
 	if _, err := bucket.Attrs(ctx); err != nil {
 		if err := bucket.Create(ctx, "demo-synq", nil); err != nil {

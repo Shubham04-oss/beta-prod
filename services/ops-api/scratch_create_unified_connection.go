@@ -12,19 +12,19 @@ import (
 )
 
 func main() {
-    _ = godotenv.Load("../../.env")
+	_ = godotenv.Load("../../.env")
 	token := os.Getenv("UNIFIED_TO_TOKEN")
 	sdk := unified.New(unified.WithSecurity(token))
 	ctx := context.Background()
 
-    // Create a Sandbox connection for Shopify (commerce)
-    provider := "shopify"
-    env := "Sandbox"
-    conn := shared.Connection{
-        Categories: []shared.PropertyConnectionCategories{shared.PropertyConnectionCategoriesCommerce},
-        Provider:   &provider,
-        Environment: &env,
-    }
+	// Create a Sandbox connection for Shopify (commerce)
+	provider := "shopify"
+	env := "Sandbox"
+	conn := shared.Connection{
+		Categories:  []shared.PropertyConnectionCategories{shared.PropertyConnectionCategoriesCommerce},
+		Provider:    &provider,
+		Environment: &env,
+	}
 
 	res, err := sdk.Unified.CreateUnifiedConnection(ctx, &conn)
 	if err != nil {

@@ -59,9 +59,9 @@ func (m *Manipulator) ProcessProductsCSV(ctx context.Context, tenantID, orgID, u
 		// We use a transaction or bulk Postgres COPY command in real life.
 		// For now, we perform a naive map-and-insert for demonstration.
 		// Note: The robust version of this groups 1000 rows into an array and does a bulk insert.
-		
+
 		log.Printf("Successfully mapped and validated SKU %s: %s (Price: %f)", row.SKU, row.Title, row.Price)
-		
+
 		return nil
 	})
 
@@ -94,11 +94,11 @@ func (m *Manipulator) ExportProductsCSV(ctx context.Context, tenantID, orgID str
 			CostPrice:   150.00,
 		},
 		{
-			Title:       "Another Exported Product",
-			Category:    "Home",
-			Status:      "DRAFT",
-			SKU:         "SYNQ-EXP-002",
-			Price:       49.99,
+			Title:    "Another Exported Product",
+			Category: "Home",
+			Status:   "DRAFT",
+			SKU:      "SYNQ-EXP-002",
+			Price:    49.99,
 		},
 	}
 

@@ -44,26 +44,26 @@ const (
 
 // Order represents an order in the domain layer
 type Order struct {
-	ID                 string
-	TenantID           string
-	OrgID              string
-	CustomerID         *string
-	Status             OrderStatus
-	PaymentStatus      *string
-	PaymentProvider    *string
-	PaymentReference   *string
-	Currency           string
-	Subtotal           float64
-	DiscountTotal      float64
-	ShippingTotal      float64
-	TaxTotal           float64
-	Total              float64
-	IdempotencyKey     *string
-	ConfirmedAt        *time.Time
-	CancelledAt        *time.Time
-	FulfilledAt        *time.Time
-	CreatedAt          time.Time
-	UpdatedAt          time.Time
+	ID               string
+	TenantID         string
+	OrgID            string
+	CustomerID       *string
+	Status           OrderStatus
+	PaymentStatus    *string
+	PaymentProvider  *string
+	PaymentReference *string
+	Currency         string
+	Subtotal         float64
+	DiscountTotal    float64
+	ShippingTotal    float64
+	TaxTotal         float64
+	Total            float64
+	IdempotencyKey   *string
+	ConfirmedAt      *time.Time
+	CancelledAt      *time.Time
+	FulfilledAt      *time.Time
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
 
 	// Associations
 	LineItems []OrderLineItem

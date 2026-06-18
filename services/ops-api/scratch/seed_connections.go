@@ -26,7 +26,7 @@ func main() {
 		if err != nil {
 			log.Fatalf("Revert Mappings failed: %v\n", err)
 		}
-		
+
 		_, err = pool.Exec(ctx, "DELETE FROM sync_failures_dlq WHERE connection_id IN (SELECT id FROM commerce_connections WHERE unified_connection_id LIKE 'mock_stress_connection_%')")
 		if err != nil {
 			log.Fatalf("Revert DLQ failed: %v\n", err)

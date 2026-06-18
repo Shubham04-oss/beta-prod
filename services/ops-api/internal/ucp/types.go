@@ -6,15 +6,15 @@ type UCPFeed []UCPProduct
 
 // UCPProduct represents a single product or product group with its variants in the UCP schema (based on schema.org/Product).
 type UCPProduct struct {
-	Context     string     `json:"@context"` // Should be "https://schema.org/"
-	Type        string     `json:"@type"`    // Should be "Product" or "ProductGroup"
-	ProductID   string     `json:"productID"` // Internal ID
-	Name        string     `json:"name"`
-	Description string     `json:"description,omitempty"`
-	Image       []string   `json:"image,omitempty"`
-	Brand       *UCPBrand  `json:"brand,omitempty"`
-	Category    string     `json:"category,omitempty"`
-	
+	Context     string    `json:"@context"`  // Should be "https://schema.org/"
+	Type        string    `json:"@type"`     // Should be "Product" or "ProductGroup"
+	ProductID   string    `json:"productID"` // Internal ID
+	Name        string    `json:"name"`
+	Description string    `json:"description,omitempty"`
+	Image       []string  `json:"image,omitempty"`
+	Brand       *UCPBrand `json:"brand,omitempty"`
+	Category    string    `json:"category,omitempty"`
+
 	// HasVariant holds the specific sellable variants (e.g. Size/Color permutations)
 	HasVariant []UCPProductVariant `json:"hasVariant,omitempty"`
 
@@ -28,13 +28,13 @@ type UCPBrand struct {
 }
 
 type UCPProductVariant struct {
-	Type        string     `json:"@type"` // "Product"
-	SKU         string     `json:"sku"`
-	GTIN        string     `json:"gtin,omitempty"`
-	Name        string     `json:"name"`
-	Image       []string   `json:"image,omitempty"`
-	Description string     `json:"description,omitempty"`
-	Offers      *UCPOffer  `json:"offers,omitempty"`
+	Type        string    `json:"@type"` // "Product"
+	SKU         string    `json:"sku"`
+	GTIN        string    `json:"gtin,omitempty"`
+	Name        string    `json:"name"`
+	Image       []string  `json:"image,omitempty"`
+	Description string    `json:"description,omitempty"`
+	Offers      *UCPOffer `json:"offers,omitempty"`
 
 	// AdditionalProperty maps to EAV attributes
 	AdditionalProperty []UCPPropertyValue `json:"additionalProperty,omitempty"`

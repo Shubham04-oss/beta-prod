@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	gpubsub "cloud.google.com/go/pubsub"
 	"crypto/tls"
@@ -16,6 +17,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 	"github.com/synq/ops-api/internal/api"
+	"github.com/synq/ops-api/internal/clients"
 	"github.com/synq/ops-api/internal/importexport"
 	auth_middleware "github.com/synq/ops-api/internal/middleware"
 	"github.com/synq/ops-api/internal/oms"
@@ -68,6 +70,13 @@ func main() {
 		log.Fatalf("Unable to connect to database: %v", err)
 	}
 	defer dbpool.Close()
+
+	// 1.5. Initialize Valkey (Redis-compatible) Connection
+	valkeyClient, err := clients.NewValkeyClient()
+	if err != nil {
+		log.Fatalf("Failed to initialize Valkey client: %v", err)
+	}
+	defer valkeyClient.Close()
 
 	// 2. Initialize Firebase Admin SDK
 	firebaseHost := os.Getenv("FIREBASE_AUTH_EMULATOR_HOST")
@@ -188,8 +197,9 @@ func main() {
 		})
 	})
 
-	// Basic middlewares
-	// TODO: Implement rate limiting middleware (e.g., redis-based IP rate limiter)
+	// Initialize Valkey/Redis-backed sliding window rate limiter (e.g., max 100 requests per minute)
+	limiter := auth_middleware.NewRateLimiter(valkeyClient, 100, 1*time.Minute)
+	r.Use(limiter.Handler)
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)

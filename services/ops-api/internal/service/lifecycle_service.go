@@ -50,7 +50,7 @@ func (s *LifecycleService) CreateTenantLifecycle(ctx context.Context, orgName, t
 		Email(adminEmail).
 		Password(adminPassword).
 		DisplayName("Admin")
-	
+
 	fbUser, err := s.auth.CreateUser(ctx, params)
 	if err != nil {
 		return fmt.Errorf("failed to create firebase user: %w", err)
@@ -58,8 +58,8 @@ func (s *LifecycleService) CreateTenantLifecycle(ctx context.Context, orgName, t
 
 	// 4. Create User in Database
 	var userID string
-	err = tx.QueryRow(ctx, 
-		"INSERT INTO users (org_id, tenant_id, email, role) VALUES ($1, $2, $3, 'ADMIN') RETURNING id", 
+	err = tx.QueryRow(ctx,
+		"INSERT INTO users (org_id, tenant_id, email, role) VALUES ($1, $2, $3, 'ADMIN') RETURNING id",
 		orgID, tenantID, adminEmail).Scan(&userID)
 	if err != nil {
 		return fmt.Errorf("failed to insert user: %w", err)
@@ -97,7 +97,7 @@ func (s *LifecycleService) InviteUser(ctx context.Context, email, orgID, tenantI
 	params := (&auth.UserToCreate{}).
 		Email(email).
 		EmailVerified(false)
-	
+
 	fbUser, err := s.auth.CreateUser(ctx, params)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create firebase user: %w", err)
@@ -105,8 +105,8 @@ func (s *LifecycleService) InviteUser(ctx context.Context, email, orgID, tenantI
 
 	// 3. Create User in Database
 	var userID string
-	err = tx.QueryRow(ctx, 
-		"INSERT INTO users (org_id, tenant_id, email, role) VALUES ($1, $2, $3, $4) RETURNING id", 
+	err = tx.QueryRow(ctx,
+		"INSERT INTO users (org_id, tenant_id, email, role) VALUES ($1, $2, $3, $4) RETURNING id",
 		orgID, tenantID, email, role).Scan(&userID)
 	if err != nil {
 		// Clean up firebase user if DB insert fails

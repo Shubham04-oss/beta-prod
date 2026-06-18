@@ -43,17 +43,17 @@ func main() {
 	// 2. Insert dummy connection
 	queries := db.New(pool)
 	queries.CreateCommerceConnection(ctx, db.CreateCommerceConnectionParams{
-		OrgID: orgID,
-		TenantID: tenantID,
+		OrgID:               orgID,
+		TenantID:            tenantID,
 		UnifiedConnectionID: "fake_shopify_123",
-		Provider: "shopify",
+		Provider:            "shopify",
 	})
 
 	log.Printf("Inserted mock connection for tenant %s", uuid.UUID(tenantID.Bytes).String())
 
 	// 3. Init Service and Trigger Push
 	svc := unified.NewService(pool, "dummy_token")
-	
+
 	err = svc.ProcessPush(ctx, uuid.UUID(tenantID.Bytes).String(), uuid.UUID(orgID.Bytes).String(), uuid.UUID(productID.Bytes).String(), "UPSERT")
 	if err != nil {
 		log.Printf("ProcessPush returned error (expected since token is fake): %v", err)

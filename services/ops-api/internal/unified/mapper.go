@@ -41,7 +41,7 @@ func MapProductToUnified(product db.Product, variants []db.ProductVariant) *shar
 				}
 			}
 		}
-		
+
 		// Map options (e.g., Color, Size) if they exist
 		if len(v.OptionValues) > 0 {
 			var opts map[string]interface{}
@@ -56,10 +56,10 @@ func MapProductToUnified(product db.Product, variants []db.ProductVariant) *shar
 				variant.Options = uOpts
 			}
 		}
-		
+
 		unifiedVariants = append(unifiedVariants, variant)
 	}
-	
+
 	item.Variants = unifiedVariants
 
 	return item

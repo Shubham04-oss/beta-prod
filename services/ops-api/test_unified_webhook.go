@@ -17,7 +17,7 @@ func main() {
 	}
 
 	payload := []byte(`{"connection_id":"test_conn_123", "event":"item.created", "data": {"id":"abc"}}`)
-	
+
 	mac := hmac.New(sha256.New, []byte(secret))
 	mac.Write(payload)
 	signature := hex.EncodeToString(mac.Sum(nil))

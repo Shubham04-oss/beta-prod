@@ -22,7 +22,7 @@ func TestOrderStateTransitions(t *testing.T) {
 		{"Processing to Fulfilled", oms.StatusProcessing, oms.StatusFulfilled, true},
 		{"PendingPayment to Cancelled", oms.StatusPendingPayment, oms.StatusCancelled, true},
 		{"Fulfilled to ReturnRequested", oms.StatusFulfilled, oms.StatusReturnRequested, true},
-		
+
 		// Invalid transitions
 		{"Draft to Fulfilled", oms.StatusDraft, oms.StatusFulfilled, false},
 		{"Cancelled to Confirmed", oms.StatusCancelled, oms.StatusConfirmed, false},

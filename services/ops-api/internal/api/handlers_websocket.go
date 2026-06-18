@@ -2,9 +2,9 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/synq/pkg/authcontext"
 	"log"
 	"net/http"
-	"github.com/synq/pkg/authcontext"
 	"time"
 
 	"github.com/coder/websocket"

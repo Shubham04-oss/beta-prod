@@ -38,7 +38,7 @@ func AuthMiddleware(authClient *auth.Client, dbpool *pgxpool.Pool) func(http.Han
 
 			// Fallback to Human Identity Verification (Firebase)
 			token, err := authClient.VerifyIDToken(r.Context(), tokenString)
-			
+
 			var tokenUID string
 			var tokenClaims map[string]interface{}
 			var tenantID string
@@ -58,7 +58,7 @@ func AuthMiddleware(authClient *auth.Client, dbpool *pgxpool.Pool) func(http.Han
 							}
 						}
 					}
-					
+
 					if tokenUID == "" {
 						http.Error(w, "Unauthorized: Invalid token and manual decode failed", http.StatusUnauthorized)
 						return

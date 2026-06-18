@@ -29,4 +29,3 @@ func main() {
 
 	fmt.Println("Successfully created pim_advanced schema!")
 }
-

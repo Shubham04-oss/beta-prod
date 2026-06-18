@@ -63,7 +63,7 @@ EXECUTE FUNCTION notify_outbox_event();
 func main() {
 	ctx := context.Background()
 	connStr := "postgres://dev:dev@shubhams-mac-mini.local:5432/synq_db"
-	
+
 	pool, err := pgxpool.New(ctx, connStr)
 	if err != nil {
 		log.Fatalf("Unable to connect to database: %v\n", err)

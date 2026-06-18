@@ -588,11 +588,11 @@ func (h *PIMHandlers) HandleListProductMedia(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	tenantUUID, _ := uuid.Parse(tenantIDStr)
-	
+
 	// Query params for filtering by product or variant if passed
 	qProductID := r.URL.Query().Get("product_id")
 	qVariantID := r.URL.Query().Get("variant_id")
-	
+
 	var pID, vID pgtype.UUID
 	if qProductID != "" {
 		pUUID, _ := uuid.Parse(qProductID)

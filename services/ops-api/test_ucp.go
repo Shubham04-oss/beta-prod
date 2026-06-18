@@ -37,7 +37,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to set env: %v", err)
 	}
-	
+
 	client, err := storage.NewClient(ctx, option.WithoutAuthentication(), option.WithEndpoint("http://shubhams-mac-mini.local:4443/storage/v1/"))
 	if err != nil {
 		log.Fatalf("Failed to create storage client: %v", err)

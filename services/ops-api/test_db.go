@@ -25,7 +25,7 @@ func createTopicIfNotExists(ctx context.Context, projectID, topicID string) erro
 		return err
 	}
 	defer client.Close()
-	
+
 	topic := client.Topic(topicID)
 	exists, err := topic.Exists(ctx)
 	if err != nil {
@@ -44,7 +44,7 @@ func runFile(ctx context.Context, pool *pgxpool.Pool, filepath string) error {
 	if err != nil {
 		return err
 	}
-	
+
 	_, err = pool.Exec(ctx, string(content))
 	if err != nil {
 		log.Printf("Warning executing %s: %v", filepath, err)
@@ -85,7 +85,7 @@ func main() {
 	_ = runFile(ctx, pool, "../../infrastructure/postgres/pim_enrichment.sql")
 
 	// 2. Setup Seed Data (Bypassing RLS by using standard queries)
-	
+
 	orgID := uuid.New()
 	tenantID := uuid.New()
 	userID := uuid.New()

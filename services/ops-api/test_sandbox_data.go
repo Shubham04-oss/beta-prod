@@ -7,8 +7,8 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	"github.com/unified-to/unified-go-sdk/pkg/models/operations"
 	sdk "github.com/unified-to/unified-go-sdk"
+	"github.com/unified-to/unified-go-sdk/pkg/models/operations"
 )
 
 func main() {
@@ -34,7 +34,7 @@ func main() {
 	fmt.Printf("Found %d connections\n", len(res.Connections))
 	for _, conn := range res.Connections {
 		fmt.Printf("Connection: %s (%s) - Env: %v\n", *conn.ID, conn.IntegrationType, *conn.Environment)
-		
+
 		// List accounting orders
 		ordersRes, err := client.Accounting.ListAccountingOrders(ctx, operations.ListAccountingOrdersRequest{
 			ConnectionID: *conn.ID,

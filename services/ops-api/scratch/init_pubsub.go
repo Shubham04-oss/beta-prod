@@ -23,7 +23,7 @@ func main() {
 
 	topicID := "pim-events"
 	topic := client.Topic(topicID)
-	
+
 	exists, err := topic.Exists(ctx)
 	if err != nil {
 		log.Fatalf("Failed to check if topic exists: %v", err)

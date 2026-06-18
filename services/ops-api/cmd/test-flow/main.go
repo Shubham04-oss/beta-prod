@@ -10,33 +10,34 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
-	
+
+	"github.com/synq/ops-api/internal/pim"
+	"github.com/synq/ops-api/internal/procurement"
 	"github.com/synq/pkg/authcontext"
 	"github.com/synq/pkg/db"
 	"github.com/synq/pkg/events"
-	"github.com/synq/ops-api/internal/pim"
-	"github.com/synq/ops-api/internal/procurement"
 )
 
 // MockPublisher executes subscriber logic inline for testing
 type MockPublisher struct {
 	Svc procurement.Service
 }
-func (m *MockPublisher) Publish(ctx context.Context, topic, eventType string, data interface{}) error { 
+
+func (m *MockPublisher) Publish(ctx context.Context, topic, eventType string, data interface{}) error {
 	fmt.Printf("Event Emitted -> Topic: %s | Type: %s\n", topic, eventType)
-	
+
 	// If it's an inventory adjusted event, instantly pass it to the procurement worker
 	if eventType == "synq.pim.inventory.adjusted" {
 		// Mock serialization
 		b, _ := json.Marshal(data)
-		
+
 		fmt.Printf(" [Worker Triggered] Processing %s...\n", eventType)
 		err := m.Svc.ProcessInventoryEvent(ctx, events.DomainEvent{EventType: eventType, Payload: b})
-        if err != nil {
-            fmt.Printf(" [Worker Error] %v\n", err)
-        }
+		if err != nil {
+			fmt.Printf(" [Worker Error] %v\n", err)
+		}
 	}
-	return nil 
+	return nil
 }
 func (m *MockPublisher) Close() error { return nil }
 
@@ -53,19 +54,19 @@ func main() {
 	dbpool.QueryRow(ctx, "SELECT id FROM organizations LIMIT 1").Scan(&orgID)
 	dbpool.QueryRow(ctx, "SELECT id FROM tenants WHERE org_id = $1 LIMIT 1", orgID).Scan(&tenantID)
 	dbpool.QueryRow(ctx, "SELECT id FROM locations WHERE tenant_id = $1 LIMIT 1", tenantID).Scan(&locID)
-	
+
 	authCtx := context.WithValue(ctx, authcontext.TenantIDKey, tenantID.String())
 	authCtx = context.WithValue(authCtx, authcontext.OrgIDKey, orgID.String())
 
 	// 1. Setup Tenant Settings (Enable Auto-PO)
 	queries := db.New(dbpool)
 	queries.UpsertTenantSettings(authCtx, db.UpsertTenantSettingsParams{
-		OrgID: pgtype.UUID{Bytes: orgID, Valid: true},
-		TenantID: pgtype.UUID{Bytes: tenantID, Valid: true},
+		OrgID:                    pgtype.UUID{Bytes: orgID, Valid: true},
+		TenantID:                 pgtype.UUID{Bytes: tenantID, Valid: true},
 		InventoryAllocationModel: pgtype.Text{String: "HARD", Valid: true},
-		AutoPoEnabled: pgtype.Bool{Bool: true, Valid: true},
+		AutoPoEnabled:            pgtype.Bool{Bool: true, Valid: true},
 		DefaultLowStockThreshold: pgtype.Int4{Int32: 20, Valid: true},
-		CostingMethod: pgtype.Text{String: "WAC", Valid: true},
+		CostingMethod:            pgtype.Text{String: "WAC", Valid: true},
 	})
 	fmt.Println("[Config] Auto-POs Enabled. Threshold = 20.")
 
@@ -73,26 +74,26 @@ func main() {
 	pimSvc := pim.NewService(dbpool, &MockPublisher{Svc: procSvc})
 
 	fmt.Println("\n--- STARTING FULL END-TO-END TEST ---")
-	
-    prodID := uuid.New()
+
+	prodID := uuid.New()
 	newProduct, _ := pimSvc.CreateProduct(authCtx, db.CreateProductParams{
-        ID:          pgtype.UUID{Bytes: prodID, Valid: true},
-		OrgID:       pgtype.UUID{Bytes: orgID, Valid: true},
-		TenantID:    pgtype.UUID{Bytes: tenantID, Valid: true},
-		Title:       "E2E Test Product",
-		Status:      pgtype.Text{String: "ACTIVE", Valid: true},
+		ID:       pgtype.UUID{Bytes: prodID, Valid: true},
+		OrgID:    pgtype.UUID{Bytes: orgID, Valid: true},
+		TenantID: pgtype.UUID{Bytes: tenantID, Valid: true},
+		Title:    "E2E Test Product",
+		Status:   pgtype.Text{String: "ACTIVE", Valid: true},
 	})
-	
+
 	var price pgtype.Numeric
 	price.Scan("500.00")
-    variantID := uuid.New()
+	variantID := uuid.New()
 	newVariant, _ := pimSvc.CreateVariant(authCtx, db.CreateProductVariantParams{
-        ID:        pgtype.UUID{Bytes: variantID, Valid: true},
+		ID:        pgtype.UUID{Bytes: variantID, Valid: true},
 		OrgID:     pgtype.UUID{Bytes: orgID, Valid: true},
 		TenantID:  pgtype.UUID{Bytes: tenantID, Valid: true},
 		ProductID: newProduct.ID,
 		Sku:       pgtype.Text{String: "E2E-SKU-001", Valid: true},
-        Price:     price,
+		Price:     price,
 	})
 
 	fmt.Println("\n[Test A] WAC Calculation & RESTOCK")
@@ -108,7 +109,9 @@ func main() {
 		QuantityDelta:   10,
 		UnitCost:        cost1,
 	})
-    if err != nil { fmt.Println("Err 1: ", err) }
+	if err != nil {
+		fmt.Println("Err 1: ", err)
+	}
 	// 10 units at $200
 	var cost2 pgtype.Numeric
 	cost2.Scan("200.00")
@@ -121,7 +124,9 @@ func main() {
 		QuantityDelta:   10,
 		UnitCost:        cost2,
 	})
-    if err != nil { fmt.Println("Err 2: ", err) }
+	if err != nil {
+		fmt.Println("Err 2: ", err)
+	}
 
 	var wac pgtype.Numeric
 	dbpool.QueryRow(ctx, "SELECT cost_price FROM product_variants WHERE id = $1", newVariant.ID).Scan(&wac)
@@ -139,7 +144,9 @@ func main() {
 		TransactionType: "SALE",
 		QuantityDelta:   -5,
 	})
-    if err != nil { fmt.Println("Err 3: ", err) }
+	if err != nil {
+		fmt.Println("Err 3: ", err)
+	}
 
 	// Check if a DRAFT PO was created in the database
 	time.Sleep(500 * time.Millisecond) // Buffer

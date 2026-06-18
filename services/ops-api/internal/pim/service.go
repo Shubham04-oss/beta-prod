@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/pgtype"
-	
+	"github.com/jackc/pgx/v5/pgxpool"
+
+	"github.com/synq/ops-api/internal/telemetry"
 	"github.com/synq/pkg/authcontext"
 	"github.com/synq/pkg/db"
 	"github.com/synq/pkg/events"
-	"github.com/synq/ops-api/internal/telemetry"
 )
 
 // Service defines the boundary for Product Information Management.
@@ -22,13 +22,13 @@ type Service interface {
 	GetProduct(ctx context.Context, params db.GetProductParams) (db.Product, error)
 	UpdateProduct(ctx context.Context, params db.UpdateProductParams) (db.Product, error)
 	DeleteProduct(ctx context.Context, params db.DeleteProductParams) error
-	
+
 	GetDashboardStats(ctx context.Context) (PIMDashboardStats, error)
 	AdjustInventory(ctx context.Context, params db.CreateInventoryLedgerEntryParams) (db.InventoryLedger, error)
 
 	CreateBrand(ctx context.Context, params db.CreateBrandParams) (db.Brand, error)
 	GetBrands(ctx context.Context, tenantID pgtype.UUID) ([]db.Brand, error)
-	
+
 	CreateCategory(ctx context.Context, params db.CreateCategoryParams) (db.Category, error)
 	GetCategories(ctx context.Context, tenantID pgtype.UUID) ([]db.Category, error)
 
@@ -50,11 +50,11 @@ type Service interface {
 }
 
 type PIMDashboardStats struct {
-	TotalProducts       int64                           `json:"totalProducts"`
-	LowStockVariants    int32                           `json:"lowStockVariants"`
-	OutOfStockVariants  int32                           `json:"outOfStockVariants"`
-	TotalInventoryValue float64                         `json:"totalInventoryValue"`
-	TopLowStock         []db.GetTopLowStockProductsRow  `json:"topLowStock"`
+	TotalProducts       int64                          `json:"totalProducts"`
+	LowStockVariants    int32                          `json:"lowStockVariants"`
+	OutOfStockVariants  int32                          `json:"outOfStockVariants"`
+	TotalInventoryValue float64                        `json:"totalInventoryValue"`
+	TopLowStock         []db.GetTopLowStockProductsRow `json:"topLowStock"`
 }
 
 type service struct {
@@ -100,7 +100,7 @@ func (s *service) CreateProduct(ctx context.Context, params db.CreateProductPara
 	}
 
 	queries := db.New(tx)
-	
+
 	// Create the product in the database
 	productRow, err := queries.CreateProduct(ctx, params)
 	if err != nil {
@@ -169,7 +169,7 @@ func (s *service) CreateVariant(ctx context.Context, params db.CreateProductVari
 	}
 
 	queries := db.New(tx)
-	
+
 	variant, err := queries.CreateProductVariant(ctx, params)
 	if err != nil {
 		return db.ProductVariant{}, fmt.Errorf("failed to create variant: %w", err)
@@ -200,7 +200,7 @@ func (s *service) CreateMedia(ctx context.Context, params db.CreateProductMediaP
 	}
 
 	queries := db.New(tx)
-	
+
 	media, err := queries.CreateProductMedia(ctx, params)
 	if err != nil {
 		return db.ProductMedium{}, fmt.Errorf("failed to create media: %w", err)
@@ -238,7 +238,7 @@ func (s *service) UpdateProduct(ctx context.Context, params db.UpdateProductPara
 	}
 
 	queries := db.New(tx)
-	
+
 	product, err := queries.UpdateProduct(ctx, params)
 	if err != nil {
 		return db.Product{}, fmt.Errorf("failed to update product: %w", err)
@@ -274,7 +274,7 @@ func (s *service) DeleteProduct(ctx context.Context, params db.DeleteProductPara
 	}
 
 	queries := db.New(tx)
-	
+
 	err = queries.DeleteProduct(ctx, params)
 	if err != nil {
 		return fmt.Errorf("failed to delete product: %w", err)
@@ -347,7 +347,7 @@ func (s *service) AdjustInventory(ctx context.Context, params db.CreateInventory
 	}
 
 	queries := db.New(tx)
-	
+
 	ledgerEntry, err := queries.CreateInventoryLedgerEntry(ctx, params)
 	if err != nil {
 		return db.InventoryLedger{}, fmt.Errorf("failed to create inventory ledger entry: %w", err)
@@ -378,7 +378,7 @@ func (s *service) CreateBrand(ctx context.Context, params db.CreateBrandParams) 
 	}
 
 	queries := db.New(tx)
-	
+
 	brand, err := queries.CreateBrand(ctx, params)
 	if err != nil {
 		return db.Brand{}, fmt.Errorf("failed to create brand: %w", err)
@@ -413,7 +413,7 @@ func (s *service) CreateCategory(ctx context.Context, params db.CreateCategoryPa
 	}
 
 	queries := db.New(tx)
-	
+
 	category, err := queries.CreateCategory(ctx, params)
 	if err != nil {
 		return db.Category{}, fmt.Errorf("failed to create category: %w", err)
@@ -448,7 +448,7 @@ func (s *service) CreateAttribute(ctx context.Context, params db.CreateAttribute
 	}
 
 	queries := db.New(tx)
-	
+
 	attribute, err := queries.CreateAttribute(ctx, params)
 	if err != nil {
 		return db.Attribute{}, fmt.Errorf("failed to create attribute: %w", err)

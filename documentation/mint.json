@@ -1,0 +1,50 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Synq Platform",
+  "logo": {
+    "light": "https://raw.githubusercontent.com/Shubham04-oss/beta-prod/main/documentation/assets/logo-light.svg",
+    "dark": "https://raw.githubusercontent.com/Shubham04-oss/beta-prod/main/documentation/assets/logo-dark.svg"
+  },
+  "favicon": "https://raw.githubusercontent.com/Shubham04-oss/beta-prod/main/documentation/assets/favicon.png",
+  "colors": {
+    "primary": "#4f46e5",
+    "light": "#818cf8",
+    "dark": "#312e81"
+  },
+  "topbarLinks": [
+    {
+      "name": "Support",
+      "url": "mailto:support@synq.app"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Go to Dashboard",
+    "url": "https://app.synq.app"
+  },
+  "tabs": [
+    {
+      "name": "Docs",
+      "schema": "docs"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": [
+        "introduction",
+        "quickstart"
+      ]
+    },
+    {
+      "group": "Architecture & Topology",
+      "pages": [
+        "architecture/overview",
+        "architecture/database-rls",
+        "architecture/gcp-agent-identity"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/Shubham04-oss/beta-prod"
+  }
+}

@@ -10,7 +10,7 @@ import (
 
 // StartPIMEventSubscriber initializes the event-driven UCP feed generation.
 func StartPIMEventSubscriber(ctx context.Context, sub events.Subscriber, temporalClient client.Client, subscriptionID string) error {
-	
+
 	handler := func(ctx context.Context, event events.DomainEvent) error {
 		// Only trigger UCP regeneration for PIM mutation events
 		switch event.EventType {
@@ -21,10 +21,10 @@ func StartPIMEventSubscriber(ctx context.Context, sub events.Subscriber, tempora
 			"synq.pim.variant.updated",
 			"synq.pim.media.created",
 			"synq.pim.media.deleted":
-			
+
 			// Extract the TenantID directly from the 4 Pillars imprinted on the event
 			tenantID := event.TenantID
-			
+
 			log.Printf("Received %s. Triggering UCP Feed Workflow for Tenant: %s", event.EventType, tenantID)
 
 			// Kick off the Temporal Workflow to regenerate the UCP feed asynchronously
@@ -37,11 +37,11 @@ func StartPIMEventSubscriber(ctx context.Context, sub events.Subscriber, tempora
 				return err
 			}
 			log.Printf("Started Temporal workflow WorkflowID: %s, RunID: %s", we.GetID(), we.GetRunID())
-			
+
 		default:
 			// Ignore other events
 		}
-		
+
 		return nil
 	}
 

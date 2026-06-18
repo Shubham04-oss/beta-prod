@@ -41,7 +41,7 @@ func TestContextWithPillars() context.Context {
 func TestEnforceRLS_ContextExtraction(t *testing.T) {
 	// We want to ensure that the service correctly extracts the TenantID from context
 	ctx := TestContextWithPillars()
-	
+
 	tenantID, err := authcontext.GetTenantID(ctx)
 	assert.NoError(t, err)
 	assert.Equal(t, "tenant-123", tenantID)
