@@ -30,3 +30,8 @@ vercel_github_repo = "Shubham04-oss/beta-prod"
 # Secure Databases & Cache Passwords
 db_password     = "your-postgres-db-password"
 valkey_password = "your-valkey-cache-password" # Optional: leave empty if no password used
+
+# Unified.to Integrations
+unified_to_token       = "your-unified-to-api-token"
+unified_workspace_id   = "your-unified-workspace-id"
+unified_webhook_secret = "your-unified-webhook-secret"

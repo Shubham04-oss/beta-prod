@@ -36,18 +36,19 @@ services:
       - POSTGRES_PWD=dev
       - POSTGRES_SEEDS=postgres
       - BIND_ON_IP=0.0.0.0
+      - TEMPORAL_BROADCAST_ADDRESS=140.245.249.91
       - TEMPORAL_CLI_ADDRESS=temporal:7233
     depends_on:
       - postgres
     restart: always
 
   temporal-ui:
-    image: temporalio/web:1.22.4
+    image: temporalio/ui:latest
     container_name: synq-temporal-ui-beta
     ports:
       - "8233:8080"
     environment:
-      - TEMPORAL_GRPC_ENDPOINT=temporal:7233
+      - TEMPORAL_ADDRESS=temporal:7233
     depends_on:
       - temporal
     restart: always

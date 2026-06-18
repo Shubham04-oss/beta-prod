@@ -100,10 +100,6 @@ resource "google_cloud_run_v2_service" "ops_api" {
         value = var.environment
       }
       env {
-        name  = "PORT"
-        value = "8080"
-      }
-      env {
         name  = "GCLOUD_PROJECT"
         value = var.gcp_project_id
       }
@@ -113,7 +109,15 @@ resource "google_cloud_run_v2_service" "ops_api" {
       }
       env {
         name  = "UNIFIED_WORKSPACE_ID"
-        value = "placeholder-workspace-id"
+        value = var.unified_workspace_id
+      }
+      env {
+        name  = "UNIFIED_TO_TOKEN"
+        value = var.unified_to_token
+      }
+      env {
+        name  = "UNIFIED_WEBHOOK_SECRET"
+        value = var.unified_webhook_secret
       }
 
       # Secrets mounted from GCP Secret Manager

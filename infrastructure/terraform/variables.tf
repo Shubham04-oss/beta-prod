@@ -107,3 +107,22 @@ variable "valkey_password" {
   sensitive   = true
   default     = ""
 }
+
+# Unified.to Integrations Variables
+variable "unified_to_token" {
+  type        = string
+  description = "Unified.to API Access Token"
+  sensitive   = true
+}
+
+variable "unified_workspace_id" {
+  type        = string
+  description = "Unified.to Workspace ID"
+  default     = "6a30432d25074ba1fa940cae"
+}
+
+variable "unified_webhook_secret" {
+  type        = string
+  description = "Unified.to Webhook Secret"
+  sensitive   = true
+}
