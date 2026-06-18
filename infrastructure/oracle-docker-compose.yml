@@ -7,7 +7,7 @@ services:
     environment:
       POSTGRES_DB: synq_db
       POSTGRES_USER: dev
-      POSTGRES_PASSWORD: dev
+      POSTGRES_PASSWORD: SynqPostgres2026Secure!
     ports:
       - "5432:5432"
     volumes:
@@ -33,10 +33,8 @@ services:
       - DB=postgresql
       - DB_PORT=5432
       - POSTGRES_USER=dev
-      - POSTGRES_PWD=dev
+      - POSTGRES_PWD=SynqPostgres2026Secure!
       - POSTGRES_SEEDS=postgres
-      - BIND_ON_IP=0.0.0.0
-      - TEMPORAL_BROADCAST_ADDRESS=140.245.249.91
       - TEMPORAL_CLI_ADDRESS=temporal:7233
     depends_on:
       - postgres
@@ -46,7 +44,7 @@ services:
     image: temporalio/ui:latest
     container_name: synq-temporal-ui-beta
     ports:
-      - "8233:8080"
+      - "8080:8080"
     environment:
       - TEMPORAL_ADDRESS=temporal:7233
     depends_on:

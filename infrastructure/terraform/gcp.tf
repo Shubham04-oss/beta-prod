@@ -58,11 +58,21 @@ resource "google_project_iam_member" "pubsub_subscriber" {
 
 # Pub/Sub Topics
 resource "google_pubsub_topic" "pim_events" {
-  name = "pim-events-${var.environment}"
+  name = "pim-events"
 }
 
-resource "google_pubsub_subscription" "pim_events_sub" {
-  name  = "pim-events-sub-${var.environment}"
+resource "google_pubsub_subscription" "unified_pim_events" {
+  name  = "unified-pim-events"
+  topic = google_pubsub_topic.pim_events.name
+
+  # 10 minutes message retention
+  message_retention_duration = "600s"
+  retain_acked_messages      = false
+  ack_deadline_seconds       = 60
+}
+
+resource "google_pubsub_subscription" "procurement_pim_events" {
+  name  = "procurement-pim-events"
   topic = google_pubsub_topic.pim_events.name
 
   # 10 minutes message retention

@@ -210,11 +210,17 @@ func main() {
 	if temporalHost == "" {
 		temporalHost = "localhost:7233"
 	}
+	var tlsConfig *tls.Config
+	if os.Getenv("TEMPORAL_USE_TLS") == "true" {
+		tlsConfig = &tls.Config{
+			InsecureSkipVerify: os.Getenv("ENV") != "production",
+		}
+	}
+
 	temporalClient, err := client.Dial(client.Options{
 		HostPort: temporalHost,
-		// TODO: Configure proper certs in production
 		ConnectionOptions: client.ConnectionOptions{
-			TLS: &tls.Config{InsecureSkipVerify: os.Getenv("ENV") != "production"},
+			TLS: tlsConfig,
 		},
 	})
 	if err != nil {
