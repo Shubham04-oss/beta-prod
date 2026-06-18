@@ -1,0 +1,8 @@
+go 1.26.3
+
+use (
+	./pkg
+	./services/agent-server
+	./services/commerce
+	./services/ops-api
+)

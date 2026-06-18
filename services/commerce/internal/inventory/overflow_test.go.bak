@@ -1,0 +1,49 @@
+package inventory
+
+import (
+	"context"
+	"math"
+	"testing"
+)
+
+func TestInMemoryService_Overflow(t *testing.T) {
+	svc := NewInMemoryService()
+	ctx := context.Background()
+	pid := "overflow-test"
+
+	// Step 1: Add math.MaxInt
+	err := svc.AdjustStock(ctx, pid, math.MaxInt)
+	if err != nil {
+		t.Fatalf("Failed to adjust stock: %v", err)
+	}
+
+	// Step 2: Reserve math.MaxInt
+	err = svc.ReserveStock(ctx, pid, math.MaxInt)
+	if err != nil {
+		t.Fatalf("Failed to reserve stock: %v", err)
+	}
+
+	// Step 3: Add math.MaxInt again (available is 0 now, so this succeeds)
+	err = svc.AdjustStock(ctx, pid, math.MaxInt)
+	if err != nil {
+		t.Fatalf("Failed to adjust stock again: %v", err)
+	}
+
+	// Step 4: Release stock
+	err = svc.ReleaseStock(ctx, pid, math.MaxInt)
+	if err != nil {
+		t.Fatalf("Failed to release stock: %v", err)
+	}
+
+	// Now available should be positive, but because of overflow it might be negative
+	avail, err := svc.GetStock(ctx, pid)
+	if err != nil {
+		t.Fatalf("Failed to get stock: %v", err)
+	}
+
+	if avail < 0 {
+		t.Errorf("BUG: Integer overflow in available stock! Expected %d, got %d", uint64(math.MaxInt)+uint64(math.MaxInt), avail)
+	} else {
+		t.Logf("Stock is %d", avail)
+	}
+}

@@ -1,0 +1,74 @@
+package inventory
+
+import (
+	"context"
+	"math/rand"
+	"sync"
+	"testing"
+)
+
+func TestInMemoryService_Stress(t *testing.T) {
+	svc := NewInMemoryService()
+	productID := "prod-123"
+
+	// Initial stock
+	err := svc.AdjustStock(context.Background(), productID, 10000)
+	if err != nil {
+		t.Fatalf("Failed to set initial stock: %v", err)
+	}
+
+	var wg sync.WaitGroup
+	workers := 100
+	opsPerWorker := 100
+
+	for i := 0; i < workers; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < opsPerWorker; j++ {
+				// Randomly reserve or release
+				qty := rand.Intn(5) + 1
+				if rand.Float32() < 0.5 {
+					_ = svc.ReserveStock(context.Background(), productID, qty)
+				} else {
+					// We might fail to release if nothing is reserved, that's fine
+					_ = svc.ReleaseStock(context.Background(), productID, qty)
+				}
+				
+				// Randomly adjust
+				adjustQty := rand.Intn(11) - 5 // -5 to +5
+				_ = svc.AdjustStock(context.Background(), productID, adjustQty)
+			}
+		}()
+	}
+
+	wg.Wait()
+
+	stock, err := svc.GetStock(context.Background(), productID)
+	if err != nil {
+		t.Fatalf("Failed to get stock: %v", err)
+	}
+
+	// Just log the final stock to ensure no deadlocks or panics occurred
+	t.Logf("Final stock: %d", stock)
+}
+
+func TestInMemoryService_NegativeQuantity(t *testing.T) {
+	svc := NewInMemoryService()
+	productID := "prod-123"
+
+	err := svc.AdjustStock(context.Background(), productID, -10)
+	if err != ErrInsufficientStock {
+		t.Fatalf("Expected ErrInsufficientStock, got %v", err)
+	}
+
+	err = svc.AdjustStock(context.Background(), productID, 10)
+	if err != nil {
+		t.Fatalf("Failed to add stock: %v", err)
+	}
+
+	err = svc.ReserveStock(context.Background(), productID, 15)
+	if err != ErrInsufficientStock {
+		t.Fatalf("Expected ErrInsufficientStock, got %v", err)
+	}
+}

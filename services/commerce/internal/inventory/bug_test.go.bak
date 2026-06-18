@@ -1,0 +1,24 @@
+package inventory
+
+import (
+	"context"
+	"math"
+	"testing"
+)
+
+func TestInMemoryService_MinIntBug(t *testing.T) {
+	svc := NewInMemoryService()
+	productID := "prod-bug"
+
+	// Add some stock
+	svc.AdjustStock(context.Background(), productID, 10)
+
+	// Adjust with math.MinInt
+	err := svc.AdjustStock(context.Background(), productID, math.MinInt)
+	
+	stock, _ := svc.GetStock(context.Background(), productID)
+	t.Logf("Stock after MinInt adjust: %d, err: %v", stock, err)
+	if stock < 0 {
+		t.Errorf("Stock went negative! Bug found.")
+	}
+}

@@ -1,0 +1,56 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: synq-postgres-beta
+    environment:
+      POSTGRES_DB: synq_db
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data_beta:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./postgres/team_workspace.sql:/docker-entrypoint-initdb.d/02-team_workspace.sql
+      - ./postgres/core_org_tenant_rls.sql:/docker-entrypoint-initdb.d/03-core_org_tenant_rls.sql
+    restart: always
+
+  valkey:
+    image: valkey/valkey:latest
+    container_name: synq-valkey-beta
+    ports:
+      - "6379:6379"
+    restart: always
+
+  temporal:
+    image: temporalio/auto-setup:1.22.4
+    container_name: synq-temporal-beta
+    ports:
+      - "7233:7233"
+    environment:
+      - DB=postgresql
+      - DB_PORT=5432
+      - POSTGRES_USER=dev
+      - POSTGRES_PWD=dev
+      - POSTGRES_SEEDS=postgres
+      - BIND_ON_IP=0.0.0.0
+      - TEMPORAL_CLI_ADDRESS=temporal:7233
+    depends_on:
+      - postgres
+    restart: always
+
+  temporal-ui:
+    image: temporalio/web:1.22.4
+    container_name: synq-temporal-ui-beta
+    ports:
+      - "8233:8080"
+    environment:
+      - TEMPORAL_GRPC_ENDPOINT=temporal:7233
+    depends_on:
+      - temporal
+    restart: always
+
+volumes:
+  pg_data_beta:

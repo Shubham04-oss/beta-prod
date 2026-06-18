@@ -1,0 +1,93 @@
+version: "3.9"
+
+services:
+  gateway:
+    image: traefik:v3.0
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "8888:80"    # Client requests hit http://macmini:8888
+      - "8081:8080"  # Traefik dashboard
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: synq_db
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+    ports: 
+      - "5432:5432"
+    volumes: 
+      - "./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql"
+
+  gcs:
+    image: fsouza/fake-gcs-server
+    command: -scheme http -port 4443
+    ports:
+      - "4443:4443"
+    volumes:
+      - gcs_data:/data
+
+  pubsub:
+    image: gcr.io/google.com/cloudsdktool/google-cloud-cli:emulators
+    command: gcloud beta emulators pubsub start --host-port=0.0.0.0:8085
+    ports:
+      - "8085:8085"
+
+  firebase:
+    image: eclipse-temurin:21-jre-jammy
+    working_dir: /app
+    volumes:
+      - ./firebase.json:/app/firebase.json
+    command: >
+      sh -c "apt-get update && apt-get install -y curl && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && apt-get install -y nodejs && npm install -g firebase-tools && firebase emulators:start --project demo-synq"
+    ports:
+      - "9099:9099" # Auth Emulator API
+      - "4000:4000" # Emulator UI
+      - "8080:8080" # Firestore Emulator API
+
+  cloud-tasks:
+    image: ghcr.io/aertje/cloud-tasks-emulator:latest
+    command: -host 0.0.0.0 -port 8123
+    ports:
+      - "8123:8123"
+
+  otel-collector:
+    image: otel/opentelemetry-collector:0.87.0
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "4317:4317" # OTLP gRPC
+      - "4318:4318" # OTLP HTTP
+      - "8889:8889" # Prometheus metrics endpoint
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.49
+    ports:
+      - "16686:16686" # UI
+      - "14250:14250" # gRPC for collector
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+
+volumes:
+  gcs_data:

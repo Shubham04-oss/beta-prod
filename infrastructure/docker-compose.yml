@@ -1,0 +1,92 @@
+version: "3.9"
+
+services:
+  gateway:
+    image: traefik:v3.0
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "8888:80"    # Client requests hit http://macmini:8888
+      - "8081:8080"  # Traefik dashboard
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: synq_db
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+    ports: 
+      - "5432:5432"
+    volumes: 
+      - "./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql"
+
+  gcs:
+    image: fsouza/fake-gcs-server
+    command: -scheme http -port 4443
+    ports:
+      - "4443:4443"
+    volumes:
+      - gcs_data:/data
+
+  pubsub:
+    image: gcr.io/google.com/cloudsdktool/google-cloud-cli:emulators
+    command: gcloud beta emulators pubsub start --host-port=0.0.0.0:8085
+    ports:
+      - "8085:8085"
+
+  firebase:
+    image: node:20
+    working_dir: /app
+    volumes:
+      - ./firebase.json:/app/firebase.json
+    command: >
+      sh -c "npm install -g firebase-tools && firebase emulators:start --project demo-synq"
+    ports:
+      - "9099:9099" # Auth Emulator API
+      - "4000:4000" # Emulator UI
+
+  cloud-tasks:
+    image: ghcr.io/aertje/cloud-tasks-emulator:latest
+    command: -host 0.0.0.0 -port 8123
+    ports:
+      - "8123:8123"
+
+  commerce:
+    build:
+      context: ../services/commerce
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_DSN: postgres://dev:dev@postgres:5432/synq_db?sslmode=disable
+    ports:
+      - "8080:8080"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.commerce.rule=PathPrefix(`/commerce`)"
+      - "traefik.http.services.commerce.loadbalancer.server.port=8080"
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus:/etc/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000" # using 3001 since 3000 might be used by Next.js
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+
+volumes:
+  gcs_data:

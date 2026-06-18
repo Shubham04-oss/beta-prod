@@ -1,0 +1,34 @@
+package inventory
+
+import (
+	"context"
+	"fmt"
+	"math/rand"
+	"testing"
+)
+
+func BenchmarkInMemoryService_Concurrent(b *testing.B) {
+	svc := NewInMemoryService()
+	ctx := context.Background()
+	
+	// Init 1000 products
+	var productIDs []string
+	for i := 0; i < 1000; i++ {
+		pid := fmt.Sprintf("bench-prod-%d", i)
+		productIDs = append(productIDs, pid)
+		_ = svc.AdjustStock(ctx, pid, 1000000)
+	}
+
+	b.ResetTimer()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			pid := productIDs[rand.Intn(len(productIDs))]
+			// 50% chance of Reserve vs Release
+			if rand.Float32() < 0.5 {
+				_ = svc.ReserveStock(ctx, pid, 1)
+			} else {
+				_ = svc.ReleaseStock(ctx, pid, 1)
+			}
+		}
+	})
+}
