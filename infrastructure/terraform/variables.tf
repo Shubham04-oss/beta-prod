@@ -4,6 +4,12 @@ variable "environment" {
   default     = "beta"
 }
 
+variable "custom_domain" {
+  type        = string
+  description = "The custom domain for the application (e.g. oryxa.in)"
+  default     = "oryxa.in"
+}
+
 # GCP Variables
 variable "gcp_project_id" {
   type        = string

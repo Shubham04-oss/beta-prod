@@ -12,11 +12,17 @@ resource "vercel_project" "synq_dashboard" {
   root_directory = "dashboard"
 }
 
+# Vercel Project Custom Domain Mapping
+resource "vercel_project_domain" "dashboard_domain" {
+  project_id = vercel_project.synq_dashboard.id
+  domain     = "dashboard.${var.custom_domain}"
+}
+
 # Environment Variable: API URL pointing to GCP Cloud Run
 resource "vercel_project_environment_variable" "api_url" {
   project_id = vercel_project.synq_dashboard.id
   key        = "NEXT_PUBLIC_API_URL"
-  value      = google_cloud_run_v2_service.ops_api.uri
+  value      = "https://${google_cloud_run_domain_mapping.ops_api_domain.name}"
   target     = ["production", "preview", "development"]
 }
 
@@ -24,8 +30,7 @@ resource "vercel_project_environment_variable" "api_url" {
 resource "vercel_project_environment_variable" "ws_url" {
   project_id = vercel_project.synq_dashboard.id
   key        = "NEXT_PUBLIC_WS_URL"
-  # Replace HTTPS with WSS / HTTP with WS for WebSockets
-  value      = replace(replace(google_cloud_run_v2_service.ops_api.uri, "https://", "wss://"), "http://", "ws://")
+  value      = "wss://${google_cloud_run_domain_mapping.ops_api_domain.name}"
   target     = ["production", "preview", "development"]
 }
 

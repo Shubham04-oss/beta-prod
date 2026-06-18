@@ -1,5 +1,6 @@
 # Synq Multi-Cloud Deployment Configuration Parameters
-environment = "beta"
+environment   = "beta"
+custom_domain = "oryxa.in"
 
 # GCP Configurations
 gcp_project_id = "your-gcp-project-id"

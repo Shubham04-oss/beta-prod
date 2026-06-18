@@ -158,7 +158,7 @@ resource "google_cloud_run_v2_service_iam_member" "public_invoker" {
 
 # Custom Domain Mapping (using Cloud Run direct domain CNAME, bypassing ALB)
 resource "google_cloud_run_domain_mapping" "ops_api_domain" {
-  name      = "api.synq.app"
+  name      = "api.${var.custom_domain}"
   location  = var.gcp_region
   project   = var.gcp_project_id
 
