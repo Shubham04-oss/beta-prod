@@ -2,9 +2,9 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: [
       'build',
-      '--tag=gcr.io/$PROJECT_ID/ops-api:latest',
+      '--tag=us-central1-docker.pkg.dev/$PROJECT_ID/synq-repo/ops-api:latest',
       '--file=services/ops-api/Dockerfile',
       '.'
     ]
 images:
-  - 'gcr.io/$PROJECT_ID/ops-api:latest'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/synq-repo/ops-api:latest'

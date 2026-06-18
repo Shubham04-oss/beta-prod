@@ -5,7 +5,7 @@ WORKDIR /src
 # Copy go.work and dependencies
 COPY go.work ./
 COPY pkg/ ./pkg/
-COPY services/ops-api/ ./services/ops-api/
+COPY services/ ./services/
 
 # Compile the server from the ops-api directory
 WORKDIR /src/services/ops-api

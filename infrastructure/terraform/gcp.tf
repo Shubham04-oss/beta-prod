@@ -81,7 +81,7 @@ resource "google_cloud_run_v2_service" "ops_api" {
     service_account = google_service_account.cloud_run_sa.email
 
     containers {
-      image = "gcr.io/${var.gcp_project_id}/ops-api:latest"
+      image = "us-central1-docker.pkg.dev/${var.gcp_project_id}/synq-repo/ops-api:latest"
 
       ports {
         container_port = 8080

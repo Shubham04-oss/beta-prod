@@ -1,0 +1,30 @@
+# Ignore Git metadata
+.git/
+.gitignore
+
+# Ignore node_modules directories
+**/node_modules/
+
+# Ignore Next.js build output
+**/.next/
+
+# Ignore compiled Go binaries and test executables
+**/*.out
+**/ops-api/main
+**/ops-api/ops-api
+**/ops-api/server
+**/ops-api/bin/
+**/agent-server/main
+**/commerce/main
+
+# Ignore local environments, secrets, and logs
+.env
+.env.*
+*.log
+.DS_Store
+
+# Ignore Terraform local state and modules
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
