@@ -1,0 +1,31 @@
+# Synq Multi-Cloud Deployment Configuration Parameters
+environment = "beta"
+
+# GCP Configurations
+gcp_project_id = "your-gcp-project-id"
+gcp_region     = "us-central1"
+
+# OCI Credentials (API Keys can be generated in OCI User Settings)
+oci_tenancy_ocid     = "ocid1.tenancy.oc1..xxxxxx"
+oci_user_ocid        = "ocid1.user.oc1..xxxxxx"
+oci_fingerprint      = "xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx"
+oci_private_key_path = "~/.oci/oci_api_key.pem"
+oci_region           = "us-ashburn-1"
+oci_compartment_ocid = "ocid1.compartment.oc1..xxxxxx"
+
+# SSH Key to load onto the database VM instance (for initial provisioning)
+oci_ssh_public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQD..."
+
+# Custom VM shape parameters (Free tier allows Standard.A1.Flex up to 4 OCPUs & 24GB RAM)
+oci_instance_shape      = "VM.Standard.A1.Flex"
+oci_instance_ocpus      = 4
+oci_instance_memory_gbs = 24
+
+# Vercel Credentials (API Token generated under Vercel Personal Tokens)
+vercel_api_token   = "your-vercel-api-token"
+vercel_team_id     = "team_xxxxxx" # Optional: omit if deploying to personal account
+vercel_github_repo = "Shubham04-oss/beta-prod"
+
+# Secure Databases & Cache Passwords
+db_password     = "your-postgres-db-password"
+valkey_password = "your-valkey-cache-password" # Optional: leave empty if no password used
