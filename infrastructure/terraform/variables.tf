@@ -126,3 +126,33 @@ variable "unified_webhook_secret" {
   description = "Unified.to Webhook Secret"
   sensitive   = true
 }
+
+# Firebase Production Client Credentials
+variable "firebase_api_key" {
+  type        = string
+  description = "Firebase Web API Key"
+  sensitive   = true
+}
+
+variable "firebase_auth_domain" {
+  type        = string
+  description = "Firebase Auth Domain"
+}
+
+variable "firebase_storage_bucket" {
+  type        = string
+  description = "Firebase Storage Bucket"
+  default     = ""
+}
+
+variable "firebase_messaging_sender_id" {
+  type        = string
+  description = "Firebase Messaging Sender ID"
+  default     = ""
+}
+
+variable "firebase_app_id" {
+  type        = string
+  description = "Firebase Web App ID"
+  default     = ""
+}

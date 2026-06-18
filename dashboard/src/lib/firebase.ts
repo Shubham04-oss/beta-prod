@@ -5,6 +5,9 @@ const firebaseConfig = {
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "demo-synq",
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "fake-api-key", // Not verified when using emulator
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || `${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "demo-synq"}.firebaseapp.com`,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
