@@ -1,11 +1,14 @@
-FROM golang:1.22-alpine AS builder
+FROM golang:1.26-alpine AS builder
 
-WORKDIR /app
-COPY go.mod ./
-# COPY go.sum ./
-RUN go mod download
+WORKDIR /src
 
-COPY . .
+# Copy go.work and dependencies
+COPY go.work ./
+COPY pkg/ ./pkg/
+COPY services/ops-api/ ./services/ops-api/
+
+# Compile the server from the ops-api directory
+WORKDIR /src/services/ops-api
 RUN CGO_ENABLED=0 GOOS=linux go build -o /server ./cmd/server
 
 FROM alpine:latest
