@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -44,8 +45,7 @@ func (h *TenantHandler) HandleOnboardTenant(w http.ResponseWriter, r *http.Reque
 
 	err := h.lifecycleService.CreateTenantLifecycle(r.Context(), req.OrgName, req.TenantName, req.AdminEmail, req.AdminPassword)
 	if err != nil {
-		// Log the actual error internally
-		// log.Printf("Failed to create tenant: %v", err)
+		log.Printf("Failed to create tenant: %v", err)
 		http.Error(w, "Failed to provision tenant", http.StatusInternalServerError)
 		return
 	}
