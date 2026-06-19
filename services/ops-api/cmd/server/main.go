@@ -181,7 +181,7 @@ func main() {
 
 	// Basic CORS
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000", "https://app.synq.com"},
+		AllowedOrigins:   []string{"http://localhost:3000", "https://app.synq.com", "https://dashboard.oryxa.in", "https://synq-dashboard-beta.vercel.app"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
