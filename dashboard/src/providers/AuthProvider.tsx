@@ -58,7 +58,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
              window.sessionStorage.setItem('synqAuthToken', token);
           }
 
-          if (pathname === '/login') {
+          const isPublicPath = pathname === '/login' || pathname === '/login/finish' || pathname === '/onboard';
+          if (isPublicPath) {
             router.push('/');
           }
         } catch (err) {
@@ -75,7 +76,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           window.sessionStorage.removeItem('synqAuthToken');
         }
         
-        if (pathname !== '/login') {
+        const isPublicPath = pathname === '/login' || pathname === '/login/finish' || pathname === '/onboard';
+        if (!isPublicPath) {
           router.push('/login');
         }
       }
@@ -85,9 +87,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => unsubscribe();
   }, [pathname, router]);
 
-  // If we are loading and not on the login page, we can show a spinner. 
-  // For the login page itself, we shouldn't block the UI rendering if loading.
-  if (loading && pathname !== '/login') {
+  // If we are loading and not on a public path, we can show a spinner. 
+  // For public pages, we shouldn't block the UI rendering if loading.
+  const isPublicPath = pathname === '/login' || pathname === '/login/finish' || pathname === '/onboard';
+  if (loading && !isPublicPath) {
     return <div className="h-screen w-screen flex items-center justify-center text-white">Loading Aurea...</div>;
   }
 
